@@ -1,4 +1,4 @@
-# CreativeFlow
+# CreatorFlow
 
 A video platform backend for AI video creators, built with **FastAPI** and **FFmpeg**.
 Users upload a video, the server validates it, stores it safely, and generates
