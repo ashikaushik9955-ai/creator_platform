@@ -17,7 +17,7 @@ class Video(Base):
 
     content_type = Column(String(100), nullable=False)
 
-    status = Column(String(50), nullable=False, default="uploaded")
+    status = Column(String(50), nullable=False, default="processing")
 
     low_file_path = Column(String(500), nullable=True)
 

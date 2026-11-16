@@ -2,6 +2,7 @@ from logging.config import fileConfig
 
 from app.database import Base, DATABASE_URL
 from app.models.video import Video
+from app.models.user import User
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool

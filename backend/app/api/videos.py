@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 
-from app.schemas.video import VideoCreate , VideoResponse , VideoUpdate
+from app.schemas.video import VideoResponse , VideoUpdate
 
 from app.models.video import Video
 
