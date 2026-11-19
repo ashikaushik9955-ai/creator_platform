@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String , ForeignKey
 from app.database import Base
 
 
@@ -9,6 +9,8 @@ class Video(Base):
 
     title = Column(String(255), nullable=False)
 
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    
     description = Column(String(1000), nullable=True)
 
     file_name = Column(String(255), nullable=False)

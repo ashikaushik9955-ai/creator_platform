@@ -11,6 +11,8 @@ from sqlalchemy.exc import IntegrityError
 import logging
 
 from app.services.video_processor import QUALITIES, generate_video_version
+from app.dependencies import get_current_user
+from app.models.user import User
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +37,15 @@ def get_video_or_404(db: Session, video_id: int) -> Video:
     if video is None:
         raise HTTPException(status_code=404, detail="Video not found")
     return video
+
+
+
+def get_owned_video_or_404(db: Session, video_id: int, user: User) -> Video:
+    video = db.get(Video, video_id)
+    if video is None or video.owner_id != user.id:
+        raise HTTPException(status_code=404, detail="Video not found")
+    return video
+
 
 @router.get("/", response_model=list[VideoResponse])
 def get_videos(db: Session = Depends(get_db)):
@@ -69,28 +80,34 @@ def delete_video_files(file_name: str) -> None:
 
 
 @router.delete("/{video_id}")
-def delete_video(video_id: int, db: Session = Depends(get_db)):
-    video = get_video_or_404(db, video_id)
+def delete_video(
+    video_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    video = get_owned_video_or_404(db, video_id, current_user)
 
     if video.status == "processing":
         raise HTTPException(status_code=409, detail="Video is still processing")
 
-    
-    file_name = video.file_name 
+    file_name = video.file_name
     db.delete(video)
     db.commit()
 
-    delete_video_files(file_name)  
+    delete_video_files(file_name)
 
     return {"message": "Video deleted successfully"}
 
 
 
 @router.patch("/{video_id}", response_model=VideoResponse)
-def update_video_partial(video_id: int, video_data: VideoUpdate,db: Session = Depends(get_db)):
-    
-
-    video = get_video_or_404(db, video_id)
+def update_video_partial(
+    video_id: int,
+    video_data: VideoUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    video = get_owned_video_or_404(db, video_id, current_user)
 
     for field, value in video_data.model_dump(exclude_unset=True).items():
         setattr(video, field, value)
@@ -163,6 +180,7 @@ def upload_video(
     description: str | None  = Form(None, max_length=1000),
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
 
     title = title.strip()
@@ -223,6 +241,7 @@ def upload_video(
             file_size=file_size,
             content_type=kind.mime,
             content_hash=content_hash,
+            owner_id=current_user.id,
             status="processing",
         )
 
