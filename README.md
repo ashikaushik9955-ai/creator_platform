@@ -135,7 +135,6 @@ backend/
 ## Roadmap
 
 - [ ] Pagination, ordering and filtering for the video list
-- [ ] CORS configuration for the frontend
 - [ ] PostgreSQL and deployment (Docker image that includes FFmpeg)
 - [ ] Job queue and worker (e.g. Redis with ARQ or Celery) for FFmpeg, so processing
       survives server restarts and can be retried
@@ -150,3 +149,4 @@ backend/
 - Access tokens expire after 30 minutes and there is no refresh-token flow yet
 - Duplicate detection is exact-match only and applies across the whole platform
 - Listing and viewing videos is public; there are no private videos yet
+- Uploaded files are served publicly; there is no support for private or exclusive videos yet.
