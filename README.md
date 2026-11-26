@@ -150,3 +150,4 @@ backend/
 - Duplicate detection is exact-match only and applies across the whole platform
 - Listing and viewing videos is public; there are no private videos yet
 - Uploaded files are served publicly; there is no support for private or exclusive videos yet.
+- The frontend stores the access token in `localStorage`, which any script on the page can read (XSS risk). A production setup should use an `httpOnly` cookie with short-lived access tokens and a refresh-token flow.
