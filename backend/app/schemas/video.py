@@ -13,6 +13,10 @@ class VideoResponse(BaseModel):
     content_type: str
     status: Literal["processing", "completed", "failed"]
 
+    low_file_path: str | None = Field(default=None, exclude=True)
+    medium_file_path: str | None = Field(default=None, exclude=True)
+    high_file_path: str | None = Field(default=None, exclude=True)
+
     @computed_field
     @property
     def file_size_display(self) -> str:
@@ -25,6 +29,22 @@ class VideoResponse(BaseModel):
         if value < 1024 ** 3:
             return f"{value / (1024 ** 2):.2f} MB"
         return f"{value / (1024 ** 3):.2f} GB"
+
+
+    @computed_field
+    @property
+    def low_url(self) -> str | None:
+        return f"/media/{self.low_file_path}" if self.low_file_path else None
+
+    @computed_field
+    @property
+    def medium_url(self) -> str | None:
+        return f"/media/{self.medium_file_path}" if self.medium_file_path else None
+
+    @computed_field
+    @property
+    def high_url(self) -> str | None:
+        return f"/media/{self.high_file_path}" if self.high_file_path else None
 
 
 class VideoUpdate(BaseModel):
